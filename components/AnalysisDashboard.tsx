@@ -50,10 +50,11 @@ export const AnalysisDashboard: React.FC<Props> = ({ results, onSelectItem, onCl
     }, {} as Record<string, number>);
 
     const total = results.length;
+    // Explicitly cast Object.entries values to number to ensure arithmetic operations are permitted by the compiler
     return Object.entries(counts).map(([name, value]) => ({ 
       name, 
       value, 
-      percentage: total > 0 ? ((value / total) * 100).toFixed(1) + '%' : '0%'
+      percentage: total > 0 ? (((value as number) / total) * 100).toFixed(1) + '%' : '0%'
     }));
   }, [results]);
 
@@ -70,8 +71,9 @@ export const AnalysisDashboard: React.FC<Props> = ({ results, onSelectItem, onCl
   const sortedResults = useMemo(() => {
     const sortableItems = [...filteredResults];
     sortableItems.sort((a, b) => {
-      let aVal: any = a[sortConfig.key];
-      let bVal: any = b[sortConfig.key];
+      // Use explicit keyof to avoid potential index signature issues
+      let aVal: any = a[sortConfig.key as keyof AnalysisResult];
+      let bVal: any = b[sortConfig.key as keyof AnalysisResult];
 
       if (sortConfig.key === 'sentiment') {
         aVal = SENTIMENT_PRIORITY[a.sentiment];
